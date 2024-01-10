@@ -1302,12 +1302,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52bb4c82eceef7d49ac064e116dff99d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canSprint: 1
+  canJump: 1
+  canUseHeadMotion: 1
+  sprintKey: 304
+  jumpKey: 32
   walkSpeed: 3
-  gravity: 30
+  sprintSpeed: 6
   lookSpeedX: 2
   lookSpeedY: 2
   upperLookLimit: 80
   lowerLookLimit: 80
+  jumpForce: 8
+  gravity: 30
+  walkHeadMotionSpeed: 14
+  walkHeadMotionAmount: 0.05
+  sprintHeadMotionSpeed: 18
+  sprintHeadMotionAmount: 0.1
 --- !u!143 &321996748
 CharacterController:
   m_ObjectHideFlags: 0
