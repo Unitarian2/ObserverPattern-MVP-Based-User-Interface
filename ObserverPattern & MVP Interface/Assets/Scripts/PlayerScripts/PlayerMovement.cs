@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : Subject
 {
     public bool CanMove { get; private set; } = true;
-    private bool IsSprinting => canSprint && Input.GetKey(sprintKey);
+    private bool IsSprinting => canSprint && Input.GetKey(sprintKey) && playerStats.IsManaEnough();
     private bool ShouldJump => characterController.isGrounded && Input.GetKey(jumpKey);
 
     [Header("Functional Options")]
@@ -33,14 +35,15 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Head Motion Params")]
     [SerializeField] private float walkHeadMotionSpeed = 14.0f;
-    [SerializeField] private float walkHeadMotionAmount = 0.05f;
+    [SerializeField] private float walkHeadMotionAmount = 0.025f;
     [SerializeField] private float sprintHeadMotionSpeed = 18.0f;
-    [SerializeField] private float sprintHeadMotionAmount = 0.1f;
+    [SerializeField] private float sprintHeadMotionAmount = 0.05f;
     private float defaultYPos;
     private float timer;
 
     private Camera playerCamera;
     private CharacterController characterController;
+    private PlayerStats playerStats;
 
     private Vector3 moveDirection;
     private Vector2 currentInput;
@@ -53,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     {
         playerCamera = GetComponentInChildren<Camera>();
         characterController = GetComponent<CharacterController>();
+        playerStats = GetComponent<PlayerStats>();
         defaultYPos = playerCamera.transform.localPosition.y;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -66,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
             
             HandleMovementInput();
             HandleMouseLook();
+            HandleMana();
 
             if (canJump) HandleJump();
 
@@ -73,6 +78,8 @@ public class PlayerMovement : MonoBehaviour
 
             ApplyMovement();
         }
+
+        
     }
 
     private void HandleMovementInput()
@@ -84,6 +91,16 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = (transform.forward * currentInput.x) + (transform.right * currentInput.y);
         moveDirection.y = moveDirectionY;
         //Debug.Log(currentInput);
+
+        
+    }
+    private void HandleMana()
+    {
+        if (IsSprinting)
+        {
+            NotifyObservers(StatType.Mana, -30f * Time.deltaTime);
+        }
+        
     }
 
     private void HandleJump()
